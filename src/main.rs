@@ -2,13 +2,26 @@ use std::env;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
+    let config = Config::new(&args);
 
-    let query = &args[1];
-    let path = &args[2];
+    println!("Searching for {} in {}", config.query, config.path);
 
-    println!("Searching for {query} in {path}");
-
-    let contents = std::fs::read_to_string(path).expect("Should have been able to read the file");
+    let contents =
+        std::fs::read_to_string(config.path).expect("Should have been able to read the file");
 
     println!("File has contents -\n{contents}");
+}
+
+struct Config {
+    query: String,
+    path: String,
+}
+
+impl Config {
+    fn new(args: &[String]) -> Config {
+        let query = args[1].clone();
+        let path = args[2].clone();
+
+        Config { query, path }
+    }
 }
