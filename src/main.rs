@@ -1,6 +1,8 @@
 use std::env;
 use std::error::Error;
 
+use sift::search;
+
 fn main() {
     let args: Vec<String> = env::args().collect();
     let config = Config::build(&args).unwrap_or_else(|err| {
@@ -34,7 +36,10 @@ impl Config {
 
     fn run(&self) -> Result<(), Box<dyn Error>> {
         let contents = std::fs::read_to_string(self.path.clone())?;
-        println!("{contents}");
+
+        for line in search(&self.query, &contents) {
+            println!("{line}");
+        }
 
         Ok(())
     }
