@@ -2,7 +2,10 @@ use std::env;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
-    let config = Config::new(&args);
+    let config = Config::build(&args).unwrap_or_else(|err| {
+        println!("Argument parsing returned an error: {err}");
+        std::process::exit(1);
+    });
 
     println!("Searching for {} in {}", config.query, config.path);
 
@@ -18,10 +21,13 @@ struct Config {
 }
 
 impl Config {
-    fn new(args: &[String]) -> Config {
+    fn build(args: &[String]) -> Result<Config, String> {
+        if args.len() < 3 {
+            return Err("Must provide atleast 2 arguments for query and file name.".to_string());
+        }
         let query = args[1].clone();
         let path = args[2].clone();
 
-        Config { query, path }
+        Ok(Config { query, path })
     }
 }
